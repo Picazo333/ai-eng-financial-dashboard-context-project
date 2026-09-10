@@ -28,3 +28,26 @@ behavior is not presented as fact.
 - `curl http://localhost:5173/` — passed with Vite HTML.
 - `cd backend && python -m pytest tests` — passed: 15 tests.
 - Direct frontend `npm test -- --run`, `npm run build`, and `npm run lint` — blocked by absent `frontend/node_modules`; exact tool-not-found errors are recorded above.
+- `cd frontend && npm install` — blocked by `EACCES` because the existing
+  Docker-created `frontend/node_modules` directory is owned by `root`.
+- `docker compose exec -T frontend npm test -- --run` — passed: 1 test file,
+  5 tests.
+- `docker compose exec -T frontend npm run build` — passed; Vite emitted a
+  chunk-size warning for a 584.26 kB JavaScript bundle.
+- `docker compose exec -T frontend npm run lint` — passed.
+
+## Phase 3 rule validation
+
+- **Test task:** Create [development-note.md](./development-note.md), a
+  documentation-only note describing the verified local data flow.
+- **Relevant rules:** `evidence-first-documentation.md`,
+  `runtime-and-data.md`, and `api-contract.md` in [.agents/rules](./.agents/rules).
+- **Expected behavior:** Every statement in the note should be traceable to
+  repository paths, should preserve the `/api` proxy contract, and should
+  describe generated data as current-date-dependent rather than fixed.
+- **Observed behavior:** The note cites the Compose file, frontend fetch and
+  Vite proxy, and backend generator. It does not describe the unused static
+  fixture as the runtime source or claim a fixed data year.
+- **Refinement made:** The runtime rule explicitly calls out
+  `frontend/src/lib/mock-data.ts` as non-runtime and requires verifying the API
+  date range before documenting a reporting period.
