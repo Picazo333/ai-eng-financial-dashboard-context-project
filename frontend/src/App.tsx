@@ -42,14 +42,30 @@ function App() {
       });
   }, []);
 
+  const loadStatus = loading
+    ? "Loading financial dashboard data."
+    : error
+      ? "Financial dashboard data failed to load."
+      : "Financial dashboard data loaded.";
+
   return (
-    <main className="dark min-h-screen bg-background text-foreground">
+    <main
+      className="dark min-h-screen bg-background text-foreground"
+      aria-busy={loading}
+    >
+      <p className="sr-only" role="status" aria-live="polite">
+        {loadStatus}
+      </p>
+
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8">
           <DashboardHeader period="2024 - Full Year" />
 
           {error ? (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground">
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive-foreground"
+            >
               {error}
             </div>
           ) : null}
