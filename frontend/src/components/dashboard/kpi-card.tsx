@@ -36,14 +36,14 @@ export function KPICard({ label, value, helperText, icon: Icon, variant, loading
 
   if (loading) {
     return (
-      <Card className="border-border/60">
+      <Card className="border-border/60" aria-busy="true" aria-label={`${label} loading`}>
         <CardContent className="p-6 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between" aria-hidden="true">
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-8 w-8 rounded-lg" />
           </div>
-          <Skeleton className="h-8 w-36" />
-          <Skeleton className="h-3 w-44" />
+          <Skeleton className="h-8 w-36" aria-hidden="true" />
+          <Skeleton className="h-3 w-44" aria-hidden="true" />
         </CardContent>
       </Card>
     )
@@ -56,8 +56,8 @@ export function KPICard({ label, value, helperText, icon: Icon, variant, loading
           <span className="text-sm font-medium text-muted-foreground tracking-wide uppercase text-pretty">
             {label}
           </span>
-          <span className={cn('p-1.5 rounded-lg', styles.badge)}>
-            <Icon size={16} className={styles.icon} />
+          <span aria-hidden="true" className={cn('p-1.5 rounded-lg', styles.badge)}>
+            <Icon size={16} className={styles.icon} aria-hidden="true" />
           </span>
         </div>
         <p className="text-3xl font-semibold tracking-tight text-foreground">{value}</p>
