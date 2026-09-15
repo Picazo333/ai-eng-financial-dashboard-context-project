@@ -58,6 +58,17 @@ describe("computeKPIs", () => {
     const metrics = computeKPIs(onlyOutcomes);
     expect(metrics.profitPercent).toBe(0);
   });
+
+  it("returns zeroed metrics for an empty movement list", () => {
+    const metrics = computeKPIs([]);
+
+    expect(metrics).toEqual({
+      totalIncome: 0,
+      totalOutcome: 0,
+      profit: 0,
+      profitPercent: 0,
+    });
+  });
 });
 
 describe("computeMonthlyData", () => {
@@ -100,6 +111,27 @@ describe("computeMonthlyData", () => {
       outcome: 0,
       profitPercent: 100,
     });
+  });
+
+  it("keeps outcome-only months and reports a zero profit margin", () => {
+    const onlyOutcome: FinancialMovement[] = [
+      {
+        create_date: "2024-04-15",
+        amount: 425,
+        operation_type: "outcome",
+        category: "operational",
+        business_type: "B2C",
+      },
+    ];
+
+    expect(computeMonthlyData(onlyOutcome)).toEqual([
+      {
+        month: "Apr 2024",
+        income: 0,
+        outcome: 425,
+        profitPercent: 0,
+      },
+    ]);
   });
 });
 
