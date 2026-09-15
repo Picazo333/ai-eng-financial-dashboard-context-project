@@ -3,11 +3,7 @@ import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { KPIRow } from "@/components/dashboard/kpi-row";
 import { IncomeOutcomeChart } from "@/components/dashboard/income-outcome-chart";
 import { ProfitPercentChart } from "@/components/dashboard/profit-percent-chart";
-import {
-  type FinancialMovement,
-  type KPIMetrics,
-  type MonthlyDataPoint,
-} from "@/lib/financial-types";
+import { type FinancialMovement } from "@/lib/financial-types";
 import { computeKPIs, computeMonthlyData } from "@/lib/financial-utils";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
@@ -21,27 +17,22 @@ async function fetchFinancialData(): Promise<FinancialMovement[]> {
 }
 
 function App() {
-  const [metrics, setMetrics] = useState<KPIMetrics | null>(null);
-  const [monthlyData, setMonthlyData] = useState<MonthlyDataPoint[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [movements, setMovements] = useState<FinancialMovement[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchFinancialData()
-      .then((movements) => {
-        setMetrics(computeKPIs(movements));
-        setMonthlyData(computeMonthlyData(movements));
-      })
+      .then(setMovements)
       .catch(() => {
         setError(
           "No se pudo cargar la informacion financiera. Revisa la API de backend.",
         );
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }, []);
 
+  const loading = movements === null && error === null;
+  const metrics = movements ? computeKPIs(movements) : null;
+  const monthlyData = movements ? computeMonthlyData(movements) : [];
   const loadStatus = loading
     ? "Loading financial dashboard data."
     : error
