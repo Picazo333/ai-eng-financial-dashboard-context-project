@@ -24,6 +24,12 @@ Applied in commit `dd93d2c`:
 - loading skeletons are treated as decorative while their containers expose useful loading labels;
 - Recharts accessibility support is made explicit and custom tooltips expose live status text.
 
+Accessibility audit notes:
+
+- the dashboard has no user-operated buttons, links, inputs, or other interactive controls, so there is no additional keyboard-focus path to repair;
+- no content images are present that require `alt` text; decorative icons are explicitly hidden from assistive technology;
+- source-level contrast checks on the active dark theme exceed the 4.5:1 baseline for the reviewed normal-text pairs, including foreground/background (~16.9:1), muted text/card (~5.17:1), and KPI badge text/background pairs (~6.17:1 to ~6.88:1).
+
 ### 2. Vercel React Best Practices
 
 Selected: `vercel-labs/agent-skills@vercel-react-best-practices`
@@ -69,8 +75,42 @@ Previously verified on `main`:
 - frontend Vitest, ESLint, and production build inside Compose;
 - frontend root on port 5173.
 
-### Current branch
+### Fresh post-change validation on `feature/agent-skills`
 
-Fresh post-change execution is **UNVERIFIED** until the final Compose validation gate is run against `feature/agent-skills`.
+The internal verification skill was executed after all assignment changes.
 
-Do not treat the branch as submission-ready until the internal verification skill has been executed and every applicable assignment criterion has evidence.
+| Check | Observed result | Status |
+| --- | --- | --- |
+| Compose build/start | backend and frontend images built; both containers started | PASS |
+| Backend `/health` | `{"status":"ok"}` | PASS |
+| Backend `/docs` | HTTP 200 | PASS |
+| Frontend root | HTTP 200 | PASS |
+| Frontend Vitest | 1 file passed, 7 tests passed | PASS |
+| Frontend ESLint | completed without errors | PASS |
+| Frontend production build | Vite build completed successfully | PASS |
+| Git working tree after validation | clean | PASS |
+| Backend pytest | not rerun because this assignment changed no backend behavior | NOT APPLICABLE |
+
+The production build still reports the known chunk-size warning (about 585 kB minified). This is a warning, not a build failure, and the inherited baseline already documented the same warning class.
+
+The first runtime HTTP check was attempted immediately after container startup and returned connection-level `HTTP 000`; after a short readiness delay, `/health`, `/docs`, and the frontend root all passed. This is recorded as startup timing rather than an application regression.
+
+## Rubric audit
+
+| Criterion | Evidence | Status |
+| --- | --- | --- |
+| Required accessibility skill discovered and applied | discovery output + commit `dd93d2c` | PASS |
+| Accessibility outcomes verified | ARIA/loading/icon/chart changes; no interactive keyboard path exists; reviewed contrast pairs exceed baseline | PASS |
+| Required Vercel React skill applied | commit `2a80c67`; Next.js-only guidance intentionally excluded | PASS |
+| Frontend still validates | 7 Vitest tests, ESLint, production build | PASS |
+| At least two ecosystem topics explored | `performance` and `testing` | PASS |
+| Additional community skill selected and applied | `wshobson/agents@javascript-testing-patterns`; commit `c601cf1` | PASS |
+| Internal project skill created under `.skills/` | `.skills/financial-dashboard-verification/SKILL.md` | PASS |
+| Internal skill used on a real task | final branch validation ledger above | PASS |
+| Memory bank updated | this file | PASS |
+| Work isolated on required branch with traceable commits | `feature/agent-skills`, skill-specific commits | PASS |
+| Submission artifact | pull request from `feature/agent-skills` to `main` | READY |
+
+## Submission readiness
+
+All applicable assignment criteria now have evidence. The branch is ready for a pull request against `main`. Do not merge the pull request before submission unless the instructor explicitly asks for it.
